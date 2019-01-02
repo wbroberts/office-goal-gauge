@@ -7,7 +7,7 @@ import { Component, Prop } from '@stencil/core';
 export class OfficeGoals {
   @Prop() data: string;
   @Prop() goal: number;
-  @Prop() color: string;
+  @Prop() color: string = '#641019';
 
   render() {
     return [
