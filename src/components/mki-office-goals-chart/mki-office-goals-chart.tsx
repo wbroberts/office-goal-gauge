@@ -3,6 +3,8 @@ import { Component, Prop } from '@stencil/core';
 import c3 from 'c3';
 import moment from 'moment';
 
+import { Data } from '../../models/data.model';
+
 @Component({
   tag: 'mki-office-goals-chart',
   styleUrl: 'mki-office-goals-chart.css'
@@ -10,29 +12,33 @@ import moment from 'moment';
 export class OfficeGoalsChart {
   chart: c3.ChartAPI;
 
-  @Prop() data: number[];
+  @Prop() data: Data[];
   @Prop() goal: number;
   @Prop() progress: number;
   @Prop() color: string = '#004C67';
 
   private lastDay: number = moment().daysInMonth();
 
-  componentWillLoad() {
+  componentDidLoad() {
     this.createChart(this.data, this.goal);
   }
 
-  private createChart(data: number[], goal: number) {
+  private createChart(data: Data[], goal: number) {
+    const linear = this.calculateClosesPerDay(data, goal);
+
     this.chart = c3.generate({
       bindto: '#goals-chart',
       data: {
         type: 'line',
         x: 'x',
         columns: [
-          ['x', ...this.data.map((_, i) => i + 1), this.lastDay],
-          ['Goal', ...data, goal]
+          ['x', ...data.map(d => d.day)],
+          ['Goal', ...linear],
+          ['Closes Compounded', ...data.map(d => d.total)],
+          ['Closes Per Day', ...data.map(d => d.sales)]
         ],
         regions: {
-          Goal: [{ start: this.data.length, end: this.lastDay, style: 'dashed' }]
+          Goal: [{ style: 'dashed' }]
         },
         colors: {
           Goal: this.color
@@ -48,5 +54,18 @@ export class OfficeGoalsChart {
         }
       }
     });
+  }
+
+  private calculateClosesPerDay(data: Data[], goal: number): number[] {
+    const perDay = goal / this.lastDay;
+    let total = 0;
+    const toGoal = [];
+
+    while (toGoal.length !== data.length) {
+      total += perDay;
+      toGoal.push(total);
+    }
+
+    return toGoal;
   }
 }

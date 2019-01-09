@@ -1,3 +1,7 @@
 .c3-shape {
   fill: none;
 }
+
+circle {
+  display: none;
+}

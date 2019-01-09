@@ -8,19 +8,22 @@
 import '@stencil/core';
 
 
+import {
+  Data,
+} from './models/data.model';
 
 
 export namespace Components {
 
   interface MkiOfficeGoalsChart {
     'color': string;
-    'data': number[];
+    'data': Data[];
     'goal': number;
     'progress': number;
   }
   interface MkiOfficeGoalsChartAttributes extends StencilHTMLAttributes {
     'color'?: string;
-    'data'?: number[];
+    'data'?: Data[];
     'goal'?: number;
     'progress'?: number;
   }
